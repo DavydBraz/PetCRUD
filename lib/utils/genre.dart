@@ -1,0 +1,4 @@
+enum PetGenre{
+  macho,
+  femea,
+}
