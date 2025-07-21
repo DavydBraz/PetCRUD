@@ -7,16 +7,17 @@ import 'package:pet_crud_dvd/classes/petClass.dart';
 import 'package:pet_crud_dvd/classes/petCrudClass.dart';
 import 'package:pet_crud_dvd/utils/genre.dart';
 import 'package:pet_crud_dvd/utils/size.dart';
+import 'package:pet_crud_dvd/utils/translate.dart';
 
 class Formspets extends StatefulWidget {
-  const Formspets({super.key});
+  //Para poder aceitar um valor opcional, criando uma variavel do tipo final e passando para o construtor.
+  final Pet? pet;
+  const Formspets({super.key, this.pet});
 
   @override
   State<Formspets> createState() => _FormspetsState();
 
 }
-
-
 
 class _FormspetsState extends State<Formspets> {
   TextEditingController nameController=TextEditingController();
@@ -42,6 +43,21 @@ class _FormspetsState extends State<Formspets> {
       setState(() {
         
       });
+    }
+  }
+
+  //Initstate podendo ter os valores passados pelo super widget caso tenham sido passados.
+  @override
+  void initState() {
+    super.initState();
+    
+    if (widget.pet != null) {
+      nameController.text = widget.pet!.name;
+      breedController.text = widget.pet!.breed;
+      ageController.text = widget.pet!.age.toString();
+      petGenre = widget.pet!.genre;
+      petSize = widget.pet!.size;
+      _image = widget.pet!.image;
     }
   }
 
@@ -72,7 +88,7 @@ class _FormspetsState extends State<Formspets> {
                         ?SizedBox(
                           width: 250,
                           height: 250,
-                          child: Center(child: Text("No Image Picked")))
+                          child: Center(child: Text(translate('no_image'))))
                         :SizedBox(
                           width: 250,
                           height: 250,
@@ -90,7 +106,7 @@ class _FormspetsState extends State<Formspets> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    decoration: InputDecoration(label: Text("Nome do pet")),
+                    decoration: InputDecoration(label: Text(translate('name_hint'))),
                     controller: nameController,
                   ),
                 ),
@@ -101,7 +117,7 @@ class _FormspetsState extends State<Formspets> {
                       SizedBox(
                         width: 250,
                         child: TextFormField(
-                          decoration: InputDecoration(label: Text("Raça do animal")),
+                          decoration: InputDecoration(label: Text(translate('breed_hint'))),
                           controller: breedController,
                         ),
                       ),
@@ -121,14 +137,14 @@ class _FormspetsState extends State<Formspets> {
                               petGenre=newValue!;
                             });
                           },
-                          items: const[
+                          items: [
                             DropdownMenuItem(
                               value: PetGenre.femea,
-                              child: Text("Fêmea"),
+                              child: Text(translate('female')),
                             ),
                             DropdownMenuItem(
                               value: PetGenre.macho,
-                              child: Text("Macho"),
+                              child: Text(translate('male')),
                             ),
                           ],
                         ),
@@ -145,7 +161,7 @@ class _FormspetsState extends State<Formspets> {
                         child: TextFormField(
                           controller: ageController,
                           decoration: InputDecoration(
-                            labelText: 'Idade',
+                            labelText: translate('age_hint'),
                             //border: OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.number,
@@ -173,15 +189,15 @@ class _FormspetsState extends State<Formspets> {
                       items: [                          
                         DropdownMenuItem(
                           value: PetSize.pequeno,
-                          child: Text("Pequeno porte"),
+                          child: Text(translate('small_size')),
                         ),
                         DropdownMenuItem(
                           value: PetSize.medio,
-                          child: Text("Médio porte"),
+                          child: Text(translate('medium_size')),
                         ),
                         DropdownMenuItem(
                           value: PetSize.grande,
-                          child: Text("Grande porte"),
+                          child: Text(translate('large_size')),
                         ),
                       ]
                       ),
@@ -200,7 +216,7 @@ class _FormspetsState extends State<Formspets> {
                       agePet = int.tryParse(ageController.text.trim()) ?? 0;
                       if (_image==null||namePet.isEmpty||breedPet.isEmpty||agePet==0) {
                         ScaffoldMessenger.of(context).showSnackBar(//mensagem avisando que precisa de um valor
-                          SnackBar(content: Text("Todos os campos precisam ser preenchidos para salvar!"))
+                          SnackBar(content: Text(translate('fill_all_fields')))
                         );
                       }else{
                         var pet=Pet(
@@ -210,12 +226,23 @@ class _FormspetsState extends State<Formspets> {
                           image: _image, 
                           genre: petGenre, 
                           age: agePet);
-                        PetCrudClass().createPet(pet);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Pet salvo com sucesso!")),
-                        );
-                        Navigator.pop(context);
+                          //Verificar para ver se sera apenas editado o valor ou se sera criado um novo, com base em se passou valor ou nao para o widget
+                          if (widget.pet == null) {
+                              // Criar novo
+                              PetCrudClass().createPet(pet);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(translate('pet_saved'))),
+                              );
+                            } else {
+                              // Atualizar pet existente
+                              PetCrudClass().updatePet(widget.pet!.name, pet);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(translate('pet_updated'))),
+                              );
+                            }
+                            Navigator.pop(context);
                       }
+
                   }),
                 )
               ]

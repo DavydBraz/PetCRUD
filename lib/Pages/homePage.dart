@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pet_crud_dvd/Pages/petsPage.dart';
 import 'package:pet_crud_dvd/Pages/settingspage.dart';
-import 'package:pet_crud_dvd/Pages/vaccinepage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,8 +15,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [    
     PetsPage(),// índice 0     
-    VaccinePage(), // índice 1 
-    SettingsPage(), // índice 2
+    SettingsPage(), // índice 1
   ];
 
   @override
@@ -34,8 +32,6 @@ class _HomePageState extends State<HomePage> {
         },
         destinations: const [
           NavigationDestination(icon: Icon(Icons.pets), label: "Pets"),
-          NavigationDestination(
-              icon: Icon(Icons.vaccines), label: "Vaccine schedule"),
           NavigationDestination(
               icon: Icon(Icons.settings), label: "Configs"),
         ],
